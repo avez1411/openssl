@@ -1,0 +1,58 @@
+#!/usr/bin/bash
+
+######################################################deb2-subca#################################################################
+
+
+
+mkdir subca
+cd subca/
+mkdir certs crl csr newcerts private
+chmod 700 private
+touch index.txt
+touch index.txt.attr
+echo 1000 > serial
+echo 1000 > crlnumber
+
+cd ..
+
+sudo apt-get install tree wget
+
+tree subca/
+
+#subca/
+#├── certs
+#├── crl
+#├── crlnumber
+#├── csr
+#├── index.txt
+#├── index.txt.attr
+#├── newcerts
+#├── private
+#└── serial
+
+cd subca/
+
+wget http://192.168.1.251/sw/pki_crypto/subca.cnf
+
+openssl genrsa -aes256 -out private/subca.key.pem 4096
+#give passphrase: 12345
+
+chmod 400 private/subca.key.pem
+
+#nano subca.cnf
+#change directory from /root/subca to /home/shuhari/subca
+#dir               = /home/shuhari/subca
+
+openssl req -config subca.cnf -new -sha256 -key private/subca.key.pem -out csr/subca.csr.pem
+#Enter pass phrase for private/subca.key.pem: 12345
+#Country Name (2 letter code) [GB]:IN
+#State or Province Name [England]:MH
+#Locality Name []:Pune
+#Organization Name [Alice Ltd]:IACSD
+#Organizational Unit Name []:CDAC
+#Common Name []:Shuhari Sub CA
+#Email Address []:shuhari@local
+
+##copy csr/subca.csr.pem file to rootca machine (/home/shuhari/ca/subca/csr/)
+scp csr/subca.csr.pem shuhari@192.168.80.103:/home/shuhari/ca/subca/csr/
+#scp csr/subca.csr.pem shuhari@192.168.80.128:/home/shuhari/ca/subca/csr/

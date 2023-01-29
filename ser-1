@@ -1,0 +1,24 @@
+#!/usr/bin/bash
+
+##########################################################deb3-ser1###############################################################
+mkdir certs
+cd certs/
+sudo apt-get install wget openssl
+
+#wget subca.cnf (file from server)
+
+openssl genrsa -out www.shuhari.local.key.pem 2048
+
+chmod 400 www.shuhari.local.key.pem
+
+openssl req -config subca.cnf -key www.shuhari.local.key.pem -new -sha256 -out www.shuhari.local.csr.pem
+#Country Name (2 letter code) [GB]:IN
+#State or Province Name [England]:MH
+#Locality Name []:Pune
+#Organization Name [Alice Ltd]:IACSD
+#Organizational Unit Name []:CDAC
+#Common Name []:www.shuhari.local
+#Email Address []:shuhari@local
+
+#scp www.shuhari.local.csr.pem shuhari@(subca_ip):/home/shuhari/subca/csr/
+scp www.shuhari.local.csr.pem shuhari@192.168.80.102:/home/shuhari/subca/csr/

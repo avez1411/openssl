@@ -1,0 +1,54 @@
+#!/usr/bin/bash
+
+############################################################deb1-rootca###########################################################
+
+sudo apt-get install tree ca-certificates wget
+
+mkdir ca
+
+cd ca/
+mkdir -p certs crl newcerts private subca/csr subca/certs/
+
+
+#tree ca/
+#ca/
+#├── certs
+#├── crl
+#├── newcerts
+#├── private
+#└── subca
+#    ├── certs
+#    └── csr
+
+
+chmod 700 private/
+
+touch index.txt
+touch index.txt.attr
+echo 1000 > serial
+echo 1000 > crlnumber
+
+#wget rootca.cnf (get it from server)
+wget http://192.168.1.251/sw/pki_crypto/rootca.cnf
+
+nano rootca.cnf
+#change directory from /root/ca to /home/shuhari/ca
+#dir               = /home/shuhari/ca
+
+openssl genrsa -aes256 -out private/ca.key.pem 4096
+#give passphrase: 12345
+
+chmod 400 private/ca.key.pem
+
+openssl req -config rootca.cnf -key private/ca.key.pem -new -x509 -days 7300 -sha256 -extensions v3_ca -out certs/ca.cert.pem
+
+#enter passphrase: 12345
+#Country Name (2 letter code) [GB]:IN
+#State or Province Name [England]:MH
+#Locality Name []:Pune
+#Organization Name [Alice Ltd]:IACSD
+#Organizational Unit Name []:CDAC
+#Common Name []:Shuhari Root CA
+#Email Address []:shuhari@local
+
+chmod 444 certs/ca.cert.pem

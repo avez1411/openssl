@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+#############################################################ser-1######################################################################################################
+
+openssl verify -CAfile ca-chain.cert.pem www.shuhari.local.cert.pem
+
+#www.shuhari.local.cert.pem: OK
+
+sudo mkdir /etc/apache2/ssl
+
+sudo cp ca-chain.cert.pem /etc/apache2/ssl/
+
+sudo cp www.shuhari.local.cert.pem /etc/apache2/ssl/
+sudo cp www.shuhari.local.key.pem /etc/apache2/ssl/
+
+sudo a2enmod ssl
+sudo a2ensite default-ssl
+
+sudo nano /etc/apache2/sites-enabled/default-ssl.conf
+
+
+###
+#ServerName www.shuhari.local
+#SSLCertificateFile      /etc/apache2/ssl/www.shuhari.local.cert.pem
+#SSLCertificateKeyFile /etc/apache2/ssl/www.shuhari.local.key.pem
+#Uncomment below line and give path
+#SSLCACertificateFile /etc/apache2/ssl/ca-chain.cert.pem
+
+sudo systemctl restart reload apache2
+sudo systemctl restart apache2
+sudo systemctl status apache2
+
+#******In windows base machine
+#edit C:\Windows\System32\drivers\etc\hosts file
+#(ser1_ip website_name)
+#192.168.80.130 www.shuhari.local
+
+
+#****In deb3-ser1 
+openssl s_client -connect www.shuhari.local:443 

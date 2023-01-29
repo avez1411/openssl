@@ -1,0 +1,48 @@
+#!/usr/bin/bash
+
+############################################################deb1-rootca###############################################################################################
+
+cd ca/
+
+openssl ca -config rootca.cnf -extensions v3_intermediate_ca -days 3650 -notext -md sha256 -in subca/csr/subca.csr.pem -out subca/certs/subca.cert.pem
+
+#give passphrase for key: 12345
+#Sign the certificate? [y/n]:y
+
+#1 out of 1 certificate requests certified, commit? [y/n]y
+
+tree
+#.
+#├── certs
+#│   └── ca.cert.pem
+#├── crl
+#├── crlnumber
+#├── index.txt
+#├── index.txt.attr
+#├── index.txt.attr.old
+#├── index.txt.old
+#├── newcerts
+#│   └── 1000.pem
+#├── private
+#│   └── ca.key.pem
+#├── rootca.cnf
+#├── serial
+#├── serial.old
+#└── subca
+#    ├── certs
+#    │   └── subca.cert.pem
+#    └── csr
+#        └── subca.csr.pem
+
+md5sum newcerts/1000.pem subca/certs/subca.cert.pem
+
+chmod 444 subca/certs/subca.cert.pem
+
+openssl verify -CAfile certs/ca.cert.pem subca/certs/subca.cert.pem
+
+#subca/certs/subca.cert.pem: OK
+
+cat subca/certs/subca.cert.pem certs/ca.cert.pem > subca/certs/ca-chain.cert.pem
+
+scp subca/certs/ca-chain.cert.pem shuhari@192.168.80.102:/home/shuhari/subca/certs/
+scp subca/certs/subca.cert.pem shuhari@192.168.80.102:/home/shuhari/subca/certs/

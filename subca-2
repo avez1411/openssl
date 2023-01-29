@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+####################################################################deb2-subca###################################################
+
+cd subca/
+
+openssl ca -config subca.cnf -extensions server_cert -days 375 -notext -md sha256 -in csr/www.shuhari.local.csr.pem -out certs/www.shuhari.local.cert.pem
+
+#Sign the certificate? [y/n]:y
+
+#1 out of 1 certificate requests certified, commit? [y/n]y
+
+#(192.168.80.130 - ser1_ip)
+
+scp certs/www.shuhari.local.cert.pem shuhari@192.168.80.101:/home/shuhari/certs/
+scp certs/ca-chain.cert.pem shuhari@192.168.80.101:/home/shuhari/certs/
